@@ -28,8 +28,42 @@ class _RandomWordsState extends State<RandomWords> {
     return Scaffold(
       appBar: AppBar(
         title: Text('First Flutter App'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: _pushSavedSuggestion,
+          )
+        ],
       ),
       body: _buildSuggestions(),
+    );
+  }
+
+  void _pushSavedSuggestion() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (BuildContext context) {
+        final Iterable<ListTile> tiles =
+            _savedSuggestionSet.map((WordPair wordPair) {
+          return ListTile(
+            title: Text(
+              wordPair.asPascalCase,
+              style: _biggerFont,
+            ),
+          );
+        });
+
+        final List<Widget> dividedTiles = ListTile.divideTiles(
+          context: context,
+          tiles: tiles,
+        ).toList();
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Saved Sugggestions'),
+          ),
+          body: ListView(children: dividedTiles),
+        );
+      }),
     );
   }
 

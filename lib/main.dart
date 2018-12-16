@@ -19,7 +19,8 @@ class RandomWords extends StatefulWidget {
 }
 
 class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
+  final _suggestionList = <WordPair>[];
+  final _savedSuggestionSet = new Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
   @override
@@ -36,25 +37,38 @@ class _RandomWordsState extends State<RandomWords> {
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       itemBuilder: (context, i) {
-        if (i.isOdd) {
-          return Divider();
+        if (i.isOdd) return Divider();
+        final itemIndex = i ~/ 2;
+
+        if (itemIndex >= _suggestionList.length) {
+          _suggestionList.addAll(generateWordPairs().take(10));
         }
 
-        final itemIndex = i ~/ 2;
-        if (itemIndex >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
-        return _buildRow(_suggestions[itemIndex]);
+        return _buildRow(_suggestionList[itemIndex]);
       },
     );
   }
 
-  Widget _buildRow(WordPair pair) {
+  Widget _buildRow(WordPair wordPair) {
+    final isAlreadySaved = _savedSuggestionSet.contains(wordPair);
     return ListTile(
       title: Text(
-        pair.asPascalCase,
+        wordPair.asPascalCase,
         style: _biggerFont,
       ),
+      trailing: Icon(
+        isAlreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: isAlreadySaved ? Colors.red : null,
+      ),
+      onTap: () {
+        setState(() {
+          if (isAlreadySaved) {
+            _savedSuggestionSet.remove(wordPair);
+          } else {
+            _savedSuggestionSet.add(wordPair);
+          }
+        });
+      },
     );
   }
 }

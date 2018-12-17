@@ -1,16 +1,9 @@
 # first_flutter_app
 
-My first Flutter application.
+My first Flutter application, following [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
 
-## Getting Started
+## Links
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
+- [Splitting widgets to methods is a performance antipattern](https://iirokrankka.com/2018/12/11/splitting-widgets-to-methods-performance-antipattern/)
 - [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+- [online documentation](https://flutter.io/docs)

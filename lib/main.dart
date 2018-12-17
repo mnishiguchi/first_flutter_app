@@ -11,87 +11,66 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.lightGreen,
       ),
-      home: RandomWords(),
+      home: RandomWordListScreen(),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+class RandomWordListScreen extends StatefulWidget {
   @override
-  _RandomWordsState createState() => new _RandomWordsState();
+  _RandomWordListScreenState createState() => _RandomWordListScreenState();
 }
 
-class _RandomWordsState extends State<RandomWords> {
-  final _suggestionList = <WordPair>[];
-  final _savedSuggestionSet = new Set<WordPair>();
-  final _biggerFont = const TextStyle(fontSize: 18.0);
+class _RandomWordListScreenState extends State<RandomWordListScreen> {
+  final _wordList = <WordPair>[];
+  final _savedWordSet = Set<WordPair>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('First Flutter App'),
+        title: Text('Random Word List'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.list),
-            onPressed: _pushSavedSuggestion,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return SavedWordScreen(
+                    wordSet: _savedWordSet,
+                  );
+                }),
+              );
+            },
           )
         ],
       ),
-      body: _buildSuggestions(),
+      body: _buildSuggestionListView(),
     );
   }
 
-  void _pushSavedSuggestion() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (BuildContext context) {
-        final Iterable<ListTile> tiles =
-            _savedSuggestionSet.map((WordPair wordPair) {
-          return ListTile(
-            title: Text(
-              wordPair.asPascalCase,
-              style: _biggerFont,
-            ),
-          );
-        });
-
-        final List<Widget> dividedTiles = ListTile.divideTiles(
-          context: context,
-          tiles: tiles,
-        ).toList();
-
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Saved Sugggestions'),
-          ),
-          body: ListView(children: dividedTiles),
-        );
-      }),
-    );
-  }
-
-  Widget _buildSuggestions() {
+  Widget _buildSuggestionListView() {
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       itemBuilder: (context, i) {
         if (i.isOdd) return Divider();
         final itemIndex = i ~/ 2;
 
-        if (itemIndex >= _suggestionList.length) {
-          _suggestionList.addAll(generateWordPairs().take(10));
+        if (itemIndex >= _wordList.length) {
+          _wordList.addAll(generateWordPairs().take(10));
         }
 
-        return _buildRow(_suggestionList[itemIndex]);
+        return _buildRow(_wordList[itemIndex]);
       },
     );
   }
 
   Widget _buildRow(WordPair wordPair) {
-    final isAlreadySaved = _savedSuggestionSet.contains(wordPair);
+    final isAlreadySaved = _savedWordSet.contains(wordPair);
     return ListTile(
       title: Text(
         wordPair.asPascalCase,
-        style: _biggerFont,
+        style: TextStyle(fontSize: 18.0),
       ),
       trailing: Icon(
         isAlreadySaved ? Icons.favorite : Icons.favorite_border,
@@ -100,11 +79,50 @@ class _RandomWordsState extends State<RandomWords> {
       onTap: () {
         setState(() {
           if (isAlreadySaved) {
-            _savedSuggestionSet.remove(wordPair);
+            _savedWordSet.remove(wordPair);
           } else {
-            _savedSuggestionSet.add(wordPair);
+            _savedWordSet.add(wordPair);
           }
         });
+      },
+    );
+  }
+}
+
+class SavedWordScreen extends StatelessWidget {
+  const SavedWordScreen({Key key, this.wordSet}) : super(key: key);
+
+  final Set<WordPair> wordSet;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Saved Words'),
+      ),
+      body: _SavedWordListView(wordSet: wordSet),
+    );
+  }
+}
+
+class _SavedWordListView extends StatelessWidget {
+  const _SavedWordListView({Key key, this.wordSet}) : super(key: key);
+
+  final Set<WordPair> wordSet;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<WordPair> suggestions = wordSet.toList();
+
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(
+            suggestions[index].asPascalCase,
+            style: TextStyle(fontSize: 18.0),
+          ),
+        );
       },
     );
   }
